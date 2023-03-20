@@ -1,0 +1,170 @@
+
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>송승우 주식정보</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+</head>
+<body>
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+<script>
+    var a = '{{ getDataTF }}';
+    console.log(typeof(a));
+    if (a != "" || a != null) {
+        if (a == 'yy') {
+            alert('오늘 날짜 새로운 정보를 받아왔습니다.');
+        }
+        if (a == 'nn') {
+            alert('더 이상 새로운 정보가 없습니다.');
+        }
+    }
+</script>
+<div class="card">
+    <div class="card-body" style="padding : 1rem 0 1rem 1rem;">
+        <div class="row">
+            <div class="col-sm-12">
+                <div id="example1_filter" class="dataTables_filter col-8 d-inline">
+                    <label>
+                        <strong>송승우의 주식 정보</strong>
+                    </label>
+                    <label>
+                        <input type="search" id="myInput" onkeypress="myFunction()" class="form-control form-control-sm" style="width : 15rem;" placeholder="종목 및 내용검색" aria-controls="example1">
+                    </label>
+                    <label>
+                        <input type="search" id="myTags" onkeypress="myTags()" class="form-control form-control-sm" style="width : 15rem;" placeholder="태그 검색" aria-controls="example1">
+                    </label>
+                </div>
+                <div class="col-4 d-inline">
+                    <button type="button" class="btn btn-outline-success btn-sm" style = "padding : 0; width: 3rem; height: 2rem; font-size : 0.8em;" onclick="periodFunction(10)" >10일</button>
+                    <button type="button" class="btn btn-outline-success btn-sm" style = "padding : 0; width: 3rem; height: 2rem; font-size : 0.8em;" onclick="periodFunction(20)" >20일</button>
+                    <button type="button" class="btn btn-outline-success btn-sm" style = "padding : 0; width: 3rem; height: 2rem; font-size : 0.8em;" onclick="periodFunction(30)" >30일</button>
+                    <button type="button" class="btn btn-outline-success btn-sm" style = "padding : 0; width: 3rem; height: 2rem; font-size : 0.8em;" onclick="periodFunction(45)" >45일</button>
+                    <button type="button" class="btn btn-outline-success btn-sm" style = "padding : 0; width: 3rem; height: 2rem; font-size : 0.8em;" onclick="periodFunction(90)" >90일</button>
+                    <button type="button" class="btn btn-outline-success btn-sm" style = "padding : 0; width: 3rem; height: 2rem; font-size : 0.8em;" onclick="periodFunction(180)">180일</button>
+                    <button type="button" class="btn btn-primary btn-sm" style = "padding : 0; width: 4rem; height: 2rem; font-size : 0.6em;" onclick="periodFunction(0)">새정보받기</button>
+                </div>
+                <form method="get" id="search" action="get_data">
+                    <input type="hidden" id="period" name="period">
+                    <input type="hidden" id="info" name="info">
+                </form>
+                <script>
+                    function myFunction() {
+                      var input1, input2, filter, table, tr, td, i, txtValue;
+                      input1 = document.getElementById("myInput")
+                      input2 = document.getElementById("myTags")
+                      filter = input1.value.toUpperCase().trim().replaceAll(' ', '');
+                      table = document.getElementById("myTable");
+                      tr = table.getElementsByTagName("tr");
+                      for (i = 0; i < tr.length; i++) {
+                        title = tr[i].getElementsByTagName("td")[3]
+                        content = tr[i].getElementsByTagName("td")[5]
+                        if (title || content) {
+                          txtTitle = title.textContent || title.innerText;
+                          txtTitle = txtTitle.trim().replaceAll(' ', '');
+                          txtContent = content.textContent || content.innerText;
+                          txtContent = txtContent.trim().replaceAll(' ', '');
+                          if (txtTitle.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            tr[i+1].style.display = "";
+                            tr[i].setAttribute('d', 'on');
+                            tr[i+1].setAttribute('d', 'on');
+                          } else if (txtContent.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            tr[i+1].style.display = "";
+                            tr[i].setAttribute('d', 'on');
+                            tr[i+1].setAttribute('d', 'on');
+                            console.log(tr[i].getAttribute('d'));
+                          } else {
+                            tr[i].style.display = "none";
+                            tr[i+1].style.display = "none";
+                          }
+                        }
+                      }
+                    }
+                    function myTags() {
+                      var input1, input2, filter, table, tr, td, i, txtValue;
+                      input1 = document.getElementById("myInput");
+                      input2 = document.getElementById("myTags");
+                      filter = input2.value.toUpperCase().trim().replaceAll(' ', '');
+                      tr = document.getElementsByClassName("myTagsClass");
+                      for (i = 0; i < tr.length; i++) {
+                        tags = tr[i].getElementsByTagName("td")[0];
+                        if (tags) {
+                          txtTags = tags.textContent || tags.innerText;
+                          txtTags = txtTags.trim().replaceAll(' ', '');
+                          if (txtTags.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            tr[i].previousElementSibling.style.display = "";
+                          } else {
+                            tr[i].style.display = "none";
+                            tr[i].previousElementSibling.style.display = "none";
+                          }
+                        }
+                      }
+                    }
+                    function periodFunction(val){
+                        document.getElementById('period').value = val;
+                        form = document.getElementById('search');
+                        if (val == 0) {
+                            document.getElementById('info').value = 'info';
+                            document.getElementById('period').value = 180
+                        } else {
+                            document.getElementById('info').value = 'yet';
+                        }
+                        form.submit();
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-bordered table-striped dataTable dtr-inline"
+                           aria-describedby="example1_info">
+                        <thead>
+                        <tr>
+                            <th style="padding : 0.1rem 0.1rem 0.3rem 0.3rem; width : 3em; font-size : 0.4em; text-align : center;" class="col-1" aria-controls="example1" tabindex="0" rowspan="1" colspan="1" >no</th>
+                            <th style="padding : 0.1rem 0.3rem 0.3rem 1.3rem; font-size : 0.4em;" class=" col-1" aria-controls="example1" tabindex="0" rowspan="1" colspan="1" >날짜</th>
+                            <th style="padding : 0.1rem 0.3rem 0.3rem 1.3rem; font-size : 0.4em; text-align : center;" class=" col-1" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" >TOP30</th>
+                            <th style="padding : 0.1rem 0.3rem 0.3rem 1.3rem; font-size : 0.4em;" class=" col-2" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" >종목</th>
+                            <th style="padding : 0.1rem 0.3rem 0.3rem 1.3rem; font-size : 0.4em;" class=" col-1" tabindex="0" aria-controls="example1" rowspan="1" colspan="1" >상승률(%)</th>
+                            <th style="padding : 0.1rem 0.3rem 0.3rem 1.3rem; font-size : 0.4em;" class=" col-8" tabindex="0" aria-controls="example1" rowspan="1" colspan="1">내용</th>
+                        </tr>
+                        </thead>
+                        <tbody id="myTable">
+                        {% for s in data %}
+                        <tr class="odd" style="padding : 0.1rem 0 0.1rem 0.4rem; font-size : 0.7em;">
+                            <td style="padding : 0.1rem 0 0.1rem 0.2rem; text-align : center" class="dtr-control sorting_1" tabindex="0"><strong>{{ forloop.counter }}</strong></td>
+                            <td style="padding : 0.1rem 0 0.1rem 0.4rem" class="dtr-control sorting_1" tabindex="0">{{ s.date }}</td>
+                            <td style="padding : 0.1rem 0 0.1rem 0.4rem; text-align : center;" >{{s.top30}}</td>
+                            <td style="padding : 0.1rem 0 0.1rem 0.4rem"  ><strong>{{s.title}}</strong></td>
+                            <td style="padding : 0.1rem 0 0.1rem 0.4rem; color : red;"  >{{s.rate}}</td>
+                            <td style="padding : 0.1rem 0 0.1rem 0.4rem"  >{{s.content}}</td>
+                        </tr>
+                        <tr class="myTagsClass" >
+                            {% if s.tags != "" %}
+                            <td style="padding : 0.2rem; font-size : 0.6em; color : #747474;" colspan="6"><strong>{{s.tags}}</strong></td>
+                            {% else %}
+                            <td style="padding : 0.6rem;" colspan="6"></td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+
+</body>
+</html>
